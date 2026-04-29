@@ -1,11 +1,21 @@
-const BASIC_AUTH = "TnZvaXBBcGlWMjpUblp2YVhCQmNHbFdNakl3TWpFPQ==";
-
 export class NvoipClient {
-  constructor({ baseUrl = "https://api.nvoip.com.br/v2" } = {}) {
+  constructor({
+    baseUrl = "https://api.nvoip.com.br/v2",
+    oauthBasicAuth = process.env.NVOIP_OAUTH_BASIC_AUTH,
+    oauthClientId = process.env.NVOIP_OAUTH_CLIENT_ID,
+    oauthClientSecret = process.env.NVOIP_OAUTH_CLIENT_SECRET,
+  } = {}) {
     this.baseUrl = baseUrl.replace(/\/+$/, "");
+    this.oauthBasicAuth = oauthBasicAuth;
+    this.oauthClientId = oauthClientId;
+    this.oauthClientSecret = oauthClientSecret;
   }
 
-  async createAccessToken({ numbersip, userToken }) {
+  static encodeBasicAuth(clientId, clientSecret) {
+    return Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+  }
+
+  createAccessToken({ numbersip, userToken, oauthBasicAuth, oauthClientId, oauthClientSecret }) {
     const body = new URLSearchParams({
       username: numbersip,
       password: userToken,
@@ -14,14 +24,18 @@ export class NvoipClient {
 
     return this.#request("POST", "/oauth/token", {
       headers: {
-        Authorization: `Basic ${BASIC_AUTH}`,
+        Authorization: `Basic ${this.#resolveBasicAuth({
+          oauthBasicAuth,
+          oauthClientId,
+          oauthClientSecret,
+        })}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body,
     });
   }
 
-  async refreshAccessToken({ refreshToken }) {
+  refreshAccessToken({ refreshToken, oauthBasicAuth, oauthClientId, oauthClientSecret }) {
     const body = new URLSearchParams({
       grant_type: "refresh_token",
       refresh_token: refreshToken,
@@ -29,22 +43,24 @@ export class NvoipClient {
 
     return this.#request("POST", "/oauth/token", {
       headers: {
-        Authorization: `Basic ${BASIC_AUTH}`,
+        Authorization: `Basic ${this.#resolveBasicAuth({
+          oauthBasicAuth,
+          oauthClientId,
+          oauthClientSecret,
+        })}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body,
     });
   }
 
-  async getBalance({ accessToken }) {
+  getBalance({ accessToken }) {
     return this.#request("GET", "/balance", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+      accessToken,
     });
   }
 
-  async sendSms({ numberPhone, message, flashSms = false, accessToken, napikey }) {
+  sendSms({ numberPhone, message, flashSms = false, accessToken, napikey }) {
     return this.#request("POST", "/sms", {
       accessToken,
       napikey,
@@ -56,14 +72,17 @@ export class NvoipClient {
     });
   }
 
-  async createCall({ caller, called, accessToken }) {
+  createCall({ caller, called, accessToken }) {
     return this.#request("POST", "/calls/", {
       accessToken,
-      json: { caller, called },
+      json: {
+        caller,
+        called,
+      },
     });
   }
 
-  async getCall({ callId, accessToken, napikey }) {
+  getCall({ callId, accessToken, napikey }) {
     const query = new URLSearchParams({ callId });
     if (napikey) {
       query.set("napikey", napikey);
@@ -74,7 +93,7 @@ export class NvoipClient {
     });
   }
 
-  async sendOtp({ payload, accessToken, napikey }) {
+  sendOtp({ payload, accessToken, napikey }) {
     return this.#request("POST", "/otp", {
       accessToken,
       napikey,
@@ -82,17 +101,39 @@ export class NvoipClient {
     });
   }
 
-  async listWhatsAppTemplates({ accessToken }) {
+  checkOtp({ code, key }) {
+    const query = new URLSearchParams({ code, key });
+    return this.#request("GET", `/check/otp?${query.toString()}`);
+  }
+
+  listWhatsAppTemplates({ accessToken }) {
     return this.#request("GET", "/wa/listTemplates", {
       accessToken,
     });
   }
 
-  async sendWhatsAppTemplate({ payload, accessToken }) {
+  sendWhatsAppTemplate({ payload, accessToken }) {
     return this.#request("POST", "/wa/sendTemplates", {
       accessToken,
       json: payload,
     });
+  }
+
+  #resolveBasicAuth({ oauthBasicAuth, oauthClientId, oauthClientSecret } = {}) {
+    const basicAuth = oauthBasicAuth ?? this.oauthBasicAuth;
+    if (basicAuth) {
+      return basicAuth;
+    }
+
+    const clientId = oauthClientId ?? this.oauthClientId;
+    const clientSecret = oauthClientSecret ?? this.oauthClientSecret;
+    if (clientId && clientSecret) {
+      return NvoipClient.encodeBasicAuth(clientId, clientSecret);
+    }
+
+    throw new Error(
+      "Missing OAuth client credentials. Configure oauthBasicAuth or oauthClientId + oauthClientSecret."
+    );
   }
 
   async #request(method, path, { headers = {}, body, json, accessToken, napikey } = {}) {
