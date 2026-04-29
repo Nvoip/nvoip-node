@@ -1,0 +1,14 @@
+{
+  "name": "nvoip-node",
+  "version": "0.1.0",
+  "description": "Cliente Node.js simples para a API v2 da Nvoip.",
+  "type": "module",
+  "main": "src/client.js",
+  "scripts": {
+    "send:sms": "node examples/send-sms.js",
+    "balance": "node examples/get-balance.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
