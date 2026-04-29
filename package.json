@@ -1,12 +1,18 @@
 {
   "name": "nvoip-node",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Cliente Node.js simples para a API v2 da Nvoip.",
   "type": "module",
   "main": "src/client.js",
   "scripts": {
+    "auth:token": "node examples/create-access-token.js",
+    "balance": "node examples/get-balance.js",
+    "call:create": "node examples/create-call.js",
+    "otp:send": "node examples/send-otp.js",
+    "otp:check": "node examples/check-otp.js",
     "send:sms": "node examples/send-sms.js",
-    "balance": "node examples/get-balance.js"
+    "wa:list": "node examples/list-whatsapp-templates.js",
+    "wa:send": "node examples/send-whatsapp-template.js"
   },
   "engines": {
     "node": ">=18"
