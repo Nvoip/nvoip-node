@@ -1,12 +1,10 @@
 export class NvoipClient {
   constructor({
     baseUrl = "https://api.nvoip.com.br/v2",
-    oauthBasicAuth = process.env.NVOIP_OAUTH_BASIC_AUTH,
     oauthClientId = process.env.NVOIP_OAUTH_CLIENT_ID,
     oauthClientSecret = process.env.NVOIP_OAUTH_CLIENT_SECRET,
   } = {}) {
     this.baseUrl = baseUrl.replace(/\/+$/, "");
-    this.oauthBasicAuth = oauthBasicAuth;
     this.oauthClientId = oauthClientId;
     this.oauthClientSecret = oauthClientSecret;
   }
@@ -15,7 +13,7 @@ export class NvoipClient {
     return Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
   }
 
-  createAccessToken({ numbersip, userToken, oauthBasicAuth, oauthClientId, oauthClientSecret }) {
+  createAccessToken({ numbersip, userToken, oauthClientId, oauthClientSecret }) {
     const body = new URLSearchParams({
       username: numbersip,
       password: userToken,
@@ -25,7 +23,6 @@ export class NvoipClient {
     return this.#request("POST", "/oauth/token", {
       headers: {
         Authorization: `Basic ${this.#resolveBasicAuth({
-          oauthBasicAuth,
           oauthClientId,
           oauthClientSecret,
         })}`,
@@ -35,7 +32,7 @@ export class NvoipClient {
     });
   }
 
-  refreshAccessToken({ refreshToken, oauthBasicAuth, oauthClientId, oauthClientSecret }) {
+  refreshAccessToken({ refreshToken, oauthClientId, oauthClientSecret }) {
     const body = new URLSearchParams({
       grant_type: "refresh_token",
       refresh_token: refreshToken,
@@ -44,7 +41,6 @@ export class NvoipClient {
     return this.#request("POST", "/oauth/token", {
       headers: {
         Authorization: `Basic ${this.#resolveBasicAuth({
-          oauthBasicAuth,
           oauthClientId,
           oauthClientSecret,
         })}`,
@@ -119,21 +115,14 @@ export class NvoipClient {
     });
   }
 
-  #resolveBasicAuth({ oauthBasicAuth, oauthClientId, oauthClientSecret } = {}) {
-    const basicAuth = oauthBasicAuth ?? this.oauthBasicAuth;
-    if (basicAuth) {
-      return basicAuth;
-    }
-
+  #resolveBasicAuth({ oauthClientId, oauthClientSecret } = {}) {
     const clientId = oauthClientId ?? this.oauthClientId;
     const clientSecret = oauthClientSecret ?? this.oauthClientSecret;
     if (clientId && clientSecret) {
       return NvoipClient.encodeBasicAuth(clientId, clientSecret);
     }
 
-    throw new Error(
-      "Missing OAuth client credentials. Configure oauthBasicAuth or oauthClientId + oauthClientSecret."
-    );
+    throw new Error("Missing OAuth client credentials. Configure oauthClientId + oauthClientSecret.");
   }
 
   async #request(method, path, { headers = {}, body, json, accessToken, napikey } = {}) {
