@@ -8,6 +8,12 @@ SDK e exemplos oficiais da [Nvoip](https://www.nvoip.com.br/) para integrar a AP
 
 - Node.js 18+
 
+## Instalacao
+
+```bash
+npm install nvoip-node
+```
+
 ## Configuracao
 
 ```bash
