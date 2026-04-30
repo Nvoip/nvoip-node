@@ -1,12 +1,26 @@
 {
   "name": "nvoip-node",
   "version": "0.2.0",
-  "description": "SDK Node.js oficial para integrar OAuth, chamadas, OTP, WhatsApp, SMS e saldo com a API v2 da Nvoip.",
+  "description": "Cliente Node.js simples para a API v2 da Nvoip.",
   "type": "module",
   "main": "src/client.js",
-  "exports": {
-    ".": "./src/client.js"
+  "license": "GPL-3.0-only",
+  "homepage": "https://www.nvoip.com.br/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nvoip/nvoip-node.git"
   },
+  "bugs": {
+    "url": "https://github.com/Nvoip/nvoip-node/issues"
+  },
+  "keywords": [
+    "nvoip",
+    "voip",
+    "sms",
+    "whatsapp",
+    "otp",
+    "api"
+  ],
   "files": [
     "src",
     "examples",
@@ -26,24 +40,5 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "keywords": [
-    "nvoip",
-    "voip",
-    "telefonia",
-    "sms",
-    "whatsapp",
-    "otp",
-    "api"
-  ],
-  "author": "Nvoip",
-  "license": "GPL-3.0-only",
-  "homepage": "https://www.nvoip.com.br/",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Nvoip/nvoip-node.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Nvoip/nvoip-node/issues"
   }
 }
