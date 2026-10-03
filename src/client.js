@@ -10,7 +10,7 @@ export class NvoipClient {
   }
 
   static encodeBasicAuth(clientId, clientSecret) {
-    return Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+    return Buffer.from(`${encodeURIComponent(clientId)}:${encodeURIComponent(clientSecret)}`).toString("base64");
   }
 
   createClientCredentialsToken({ oauthClientId, oauthClientSecret } = {}) {
