@@ -8,7 +8,8 @@ const oauth = await client.createClientCredentialsToken();
 const response = await client.sendOtp({
   accessToken: oauth.access_token,
   payload: {
-    sms: process.env.NVOIP_TARGET_NUMBER ?? "11999999999",
+    phoneNumber: process.env.NVOIP_TARGET_NUMBER,
+    methods: { sms: true },
   },
 });
 

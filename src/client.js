@@ -10,7 +10,11 @@ export class NvoipClient {
   }
 
   static encodeBasicAuth(clientId, clientSecret) {
-    return Buffer.from(`${encodeURIComponent(clientId)}:${encodeURIComponent(clientSecret)}`).toString("base64");
+    const formValue = value => new URLSearchParams({ v: value }).toString().slice(2);
+    return Buffer.from([
+      formValue(clientId),
+      formValue(clientSecret),
+    ].join(":" )).toString("base64");
   }
 
   createClientCredentialsToken({ oauthClientId, oauthClientSecret } = {}) {
