@@ -1,6 +1,6 @@
 export class NvoipClient {
   constructor({
-    baseUrl = "https://api.nvoip.com.br/v2",
+    baseUrl = "https://api.nvoip.com.br/v3",
     oauthClientId = process.env.NVOIP_OAUTH_CLIENT_ID,
     oauthClientSecret = process.env.NVOIP_OAUTH_CLIENT_SECRET,
   } = {}) {
@@ -13,14 +13,12 @@ export class NvoipClient {
     return Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
   }
 
-  createAccessToken({ numbersip, userToken, oauthClientId, oauthClientSecret }) {
+  createClientCredentialsToken({ oauthClientId, oauthClientSecret } = {}) {
     const body = new URLSearchParams({
-      username: numbersip,
-      password: userToken,
-      grant_type: "password",
+      grant_type: "client_credentials",
     });
 
-    return this.#request("POST", "/oauth/token", {
+    return this.#request("POST", "https://api.nvoip.com.br/auth/oauth2/token", {
       headers: {
         Authorization: `Basic ${this.#resolveBasicAuth({
           oauthClientId,
@@ -38,7 +36,7 @@ export class NvoipClient {
       refresh_token: refreshToken,
     });
 
-    return this.#request("POST", "/oauth/token", {
+    return this.#request("POST", "https://api.nvoip.com.br/auth/oauth2/token", {
       headers: {
         Authorization: `Basic ${this.#resolveBasicAuth({
           oauthClientId,
@@ -56,10 +54,9 @@ export class NvoipClient {
     });
   }
 
-  sendSms({ numberPhone, message, flashSms = false, accessToken, napikey }) {
+  sendSms({ numberPhone, message, flashSms = false, accessToken }) {
     return this.#request("POST", "/sms", {
       accessToken,
-      napikey,
       json: {
         numberPhone,
         message,
@@ -78,28 +75,24 @@ export class NvoipClient {
     });
   }
 
-  getCall({ callId, accessToken, napikey }) {
+  getCall({ callId, accessToken }) {
     const query = new URLSearchParams({ callId });
-    if (napikey) {
-      query.set("napikey", napikey);
-    }
 
     return this.#request("GET", `/calls?${query.toString()}`, {
       accessToken,
     });
   }
 
-  sendOtp({ payload, accessToken, napikey }) {
+  sendOtp({ payload, accessToken }) {
     return this.#request("POST", "/otp", {
       accessToken,
-      napikey,
       json: payload,
     });
   }
 
-  checkOtp({ code, key }) {
+  checkOtp({ code, key, accessToken }) {
     const query = new URLSearchParams({ code, key });
-    return this.#request("GET", `/check/otp?${query.toString()}`);
+    return this.#request("GET", `/check/otp?${query.toString()}`, { accessToken });
   }
 
   listWhatsAppTemplates({ accessToken }) {
@@ -125,11 +118,8 @@ export class NvoipClient {
     throw new Error("Missing OAuth client credentials. Configure oauthClientId + oauthClientSecret.");
   }
 
-  async #request(method, path, { headers = {}, body, json, accessToken, napikey } = {}) {
-    const url = new URL(`${this.baseUrl}${path}`);
-    if (napikey) {
-      url.searchParams.set("napikey", napikey);
-    }
+  async #request(method, path, { headers = {}, body, json, accessToken } = {}) {
+    const url = new URL(path.startsWith("http") ? path : `${this.baseUrl}${path}`);
 
     const requestHeaders = { ...headers };
     if (accessToken) {

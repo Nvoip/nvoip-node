@@ -1,7 +1,7 @@
 {
   "name": "nvoip-node",
-  "version": "0.2.0",
-  "description": "Cliente Node.js simples para a API v2 da Nvoip.",
+  "version": "3.0.0",
+  "description": "Cliente Node.js simples para a API v3 da Nvoip.",
   "type": "module",
   "main": "src/client.js",
   "license": "GPL-3.0-only",

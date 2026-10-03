@@ -1,8 +1,12 @@
 # nvoip-node
 
-[![CI](https://github.com/Nvoip/nvoip-node/actions/workflows/ci.yml/badge.svg)](https://github.com/Nvoip/nvoip-node/actions/workflows/ci.yml) [![npm](https://img.shields.io/npm/v/nvoip-node?style=flat-square)](https://www.npmjs.com/package/nvoip-node) [![npm downloads](https://img.shields.io/npm/dm/nvoip-node?style=flat-square)](https://www.npmjs.com/package/nvoip-node) [![Nvoip](https://img.shields.io/badge/Nvoip-site-00A3E0?style=flat-square)](https://www.nvoip.com.br/) [![API v2](https://img.shields.io/badge/API-v2-1F6FEB?style=flat-square)](https://www.nvoip.com.br/api/) [![Docs](https://img.shields.io/badge/docs-Apiary-6A737D?style=flat-square)](https://nvoip.docs.apiary.io/) [![Postman](https://img.shields.io/badge/Postman-workspace-FF6C37?style=flat-square)](https://nvoip-api.postman.co/workspace/e671d01f-168a-4c38-8d0e-c217229dd61a/team-quickstart) [![Stack](https://img.shields.io/badge/stack-Node.js-339933?style=flat-square)](https://github.com/Nvoip/nvoip-api-examples) [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square)](LICENSE)
+[![CI](https://github.com/Nvoip/nvoip-node/actions/workflows/ci.yml/badge.svg)](https://github.com/Nvoip/nvoip-node/actions/workflows/ci.yml) [![npm](https://img.shields.io/npm/v/nvoip-node?style=flat-square)](https://www.npmjs.com/package/nvoip-node) [![npm downloads](https://img.shields.io/npm/dm/nvoip-node?style=flat-square)](https://www.npmjs.com/package/nvoip-node) [![Nvoip](https://img.shields.io/badge/Nvoip-site-00A3E0?style=flat-square)](https://www.nvoip.com.br/) [![API v3](https://img.shields.io/badge/API-v3-1F6FEB?style=flat-square)](https://www.nvoip.com.br/api/) [![Docs](https://img.shields.io/badge/docs-Apiary-6A737D?style=flat-square)](https://nvoip.docs.apiary.io/) [![Postman](https://img.shields.io/badge/Postman-workspace-FF6C37?style=flat-square)](https://nvoip-api.postman.co/workspace/e671d01f-168a-4c38-8d0e-c217229dd61a/team-quickstart) [![Stack](https://img.shields.io/badge/stack-Node.js-339933?style=flat-square)](https://github.com/Nvoip/nvoip-api-examples) [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square)](LICENSE)
 
-SDK e exemplos oficiais da [Nvoip](https://www.nvoip.com.br/) para integrar a API v2 com OAuth, chamadas, OTP, WhatsApp, SMS e saldo em Node.js.
+SDK e exemplos oficiais da [Nvoip](https://www.nvoip.com.br/) para integrar a API v3 com OAuth, chamadas, OTP, WhatsApp, SMS e saldo em Node.js.
+
+## Migração para v3
+
+Esta é uma quebra de compatibilidade: use `createClientCredentialsToken()` e envie o access token RS256 em `Authorization: Bearer`. O SDK usa `https://api.nvoip.com.br/auth/oauth2/token`; não use `napikey`, password grant ou `/v3/oauth/token`. Para SMS de texto livre, valide antes a política e o template aprovado aplicáveis à sua conta.
 
 ## Requisitos
 
@@ -23,8 +27,8 @@ cp .env.example .env
 Ou exporte as variaveis:
 
 ```bash
-export NVOIP_NUMBERSIP="seu_numbersip"
-export NVOIP_USER_TOKEN="seu_user_token"
+export NVOIP_OAUTH_CLIENT_ID="seu_numbersip"
+export NVOIP_OAUTH_CLIENT_SECRET="seu_user_token"
 export NVOIP_OAUTH_CLIENT_ID="seu_client_id"
 export NVOIP_OAUTH_CLIENT_SECRET="seu_client_secret"
 export NVOIP_CALLER="1049"
