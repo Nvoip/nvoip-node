@@ -4,10 +4,7 @@ const client = new NvoipClient({
   baseUrl: process.env.NVOIP_BASE_URL,
 });
 
-const oauth = await client.createAccessToken({
-  numbersip: process.env.NVOIP_NUMBERSIP,
-  userToken: process.env.NVOIP_USER_TOKEN,
-});
+const oauth = await client.createClientCredentialsToken();
 
 const bodyVariables = JSON.parse(process.env.NVOIP_WA_BODY_VARIABLES ?? "[]");
 const headerVariables = JSON.parse(process.env.NVOIP_WA_HEADER_VARIABLES ?? "[]");

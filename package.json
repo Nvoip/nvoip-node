@@ -1,7 +1,7 @@
 {
   "name": "nvoip-node",
-  "version": "0.2.0",
-  "description": "Cliente Node.js simples para a API v2 da Nvoip.",
+  "version": "3.0.0",
+  "description": "Cliente Node.js simples para a API v3 da Nvoip.",
   "type": "module",
   "main": "src/client.js",
   "license": "GPL-3.0-only",
@@ -36,7 +36,8 @@
     "otp:check": "node examples/check-otp.js",
     "send:sms": "node examples/send-sms.js",
     "wa:list": "node examples/list-whatsapp-templates.js",
-    "wa:send": "node examples/send-whatsapp-template.js"
+    "wa:send": "node examples/send-whatsapp-template.js",
+    "test": "node --test tests/*.test.js"
   },
   "engines": {
     "node": ">=18"

@@ -17,4 +17,5 @@ jobs:
           node-version: "20"
       - run: node --check src/client.js
       - run: for file in examples/*.js; do node --check "$file"; done
+      - run: npm test
       - run: npm pack --dry-run

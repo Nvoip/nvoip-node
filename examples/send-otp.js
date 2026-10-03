@@ -3,11 +3,13 @@ import { NvoipClient } from "../src/client.js";
 const client = new NvoipClient({
   baseUrl: process.env.NVOIP_BASE_URL,
 });
+const oauth = await client.createClientCredentialsToken();
 
 const response = await client.sendOtp({
-  napikey: process.env.NVOIP_NAPIKEY,
+  accessToken: oauth.access_token,
   payload: {
-    sms: process.env.NVOIP_TARGET_NUMBER ?? "11999999999",
+    phoneNumber: process.env.NVOIP_TARGET_NUMBER,
+    methods: { sms: true },
   },
 });
 
